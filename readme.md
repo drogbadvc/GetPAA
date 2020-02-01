@@ -1,5 +1,8 @@
 # GetPAA - Simple scraping People Also Ask 
-
+![GitHub](https://img.shields.io/scrutinizer/build/g/drogbadvc/GetPAA)
+![GitHub](https://img.shields.io/github/languages/count/drogbadvc/GetPAA)
+![GitHub](https://img.shields.io/github/languages/top/drogbadvc/GetPAA)
+![GitHub](https://img.shields.io/scrutinizer/quality/g/drogbadvc/GetPAA)
 
 ## About
 GetPAA is a tool for scraping People Also Ask from Google French in just one click with the possibility of choosing the depth.
