@@ -2,13 +2,14 @@
 
 
 ## About
- GetPAA is a tool for scraping People Also Ask from Google French in just one click with the possibility of choosing the depth.
+GetPAA is a tool for scraping People Also Ask from Google French in just one click with the possibility of choosing the depth.
  
-Ability to switch to English in configuration files
+Ability to switch to English in configuration files.
 
 ## Requirements
 
 **Local Environment**
+* PHP >=7.2 (https://www.php.net/downloads.php)
 * NodeJS (https://nodejs.org/fr/)
 
 **NPM-Packages**
