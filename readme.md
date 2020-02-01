@@ -20,6 +20,7 @@ Ability to switch to English in configuration files.
 ## Install
 
 Download ZIP project, extract and to your www or HTDOCS directory (web server)
+
 Check node,npm  and composer are installed in Terminal :
 
 ```sh
