@@ -15,18 +15,18 @@ $slugify = new Slugify();
 $msg = new FlashMessages();
 
 Storage::session();
-$ppa = new ppa($slugify, $msg);
+$paa = new Paa($slugify, $msg);
 
 if ($isValid) {
-    [$keyword, $ppa_record, $depth] = $ppa->inputKeywordsPost();
+    [$keyword, $paa_record, $depth, $lang] = $paa->inputKeywordsPost();
     $slug_csv = $slugify->slugify($keyword);
 } else {
-    $ppa->renderError($msg, 'Oops, Token invalide :(');
+    $paa->renderError('Oops, Token invalide :(');
 }
 
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     if ($GetValid) {
-        $ppa->exportCSV();
+        $paa->exportCSV();
     }
 }
 ?>
