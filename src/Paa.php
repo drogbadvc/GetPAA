@@ -7,9 +7,11 @@ use League\Csv\Statement;
 use League\Csv\Writer;
 use Plasticbrain\FlashMessages\FlashMessages;
 
-class ppa {
+class Paa
+{
 
     CONST DEPTH = [0, 1, 2, 'max'];
+    CONST LANG = ['fr', 'en'];
     CONST PATH_QUESTIONS = "assets/questions/";
 
     /**
@@ -20,9 +22,13 @@ class ppa {
      * @var FlashMessages
      */
     private $msg;
+    /**
+     * @var string
+     */
+    private $lang = 'fr';
 
     /**
-     * ppa constructor.
+     * Paa constructor.
      * @param Slugify $slugify
      * @param FlashMessages $msg
      */
@@ -53,20 +59,22 @@ class ppa {
                 $slug = $this->slugify->slugify($keyword);
                 $dirname = self::PATH_QUESTIONS . $slug . '/';
 
-                // Scraping google PPA and create CSV
+                // Scraping google Paa and create CSV
+                $this->langPaa();
                 $this->fileRenderCSV($keyword, $depth, $dirname);
 
                 // Read csv and getting results
                 $records = $this->dataWithLimitCSV($depth, $dirname, 500);
                 foreach ($records as $offset => $record) {
-                    $ppa_record[] = $record;
+                    $paa_record[] = $record;
                 }
 
-                return [$keyword, $ppa_record, $depth];
+                $lang = $this->lang;
+                return [$keyword, $paa_record, $depth, $lang];
             }
         }
 
-        return ['', [], ''];
+        return ['', [], '', 'fr'];
     }
 
     /**
@@ -76,7 +84,9 @@ class ppa {
     {
         $slug = HelperCharacters::escape(ParamsRequest::get('keyword'));
         $array_depth = self::DEPTH;
+
         $depth = ParamsRequest::get('depth');
+        $this->lang = ParamsRequest::get('lang');
         if (in_array($depth, $array_depth)) {
             $dirname = self::PATH_QUESTIONS . $slug . '/';
             $this->openAndCreateFileCSV($depth, $dirname, $slug);
@@ -94,10 +104,18 @@ class ppa {
     /**
      * @param FlashMessages $msg
      * @param string $message
+     * @param bool $code
      */
-    public function renderError(FlashMessages $msg, string $message): void
+    public function renderError(string $message, bool $code = false): void
     {
-        $msg->error($message);
+        $this->msg->error($message);
+        if ($code) {
+            $this->msg->add('<ol>
+                        <li><kbd>chown -R www-data assets</kbd></li>
+                        <li><kbd>chgrp -R www-data assets</kbd></li>
+                        <li><kbd>chmod -R 777 assets</kbd></li>
+                    </ol>');   
+        }
         header('location: index.php');
         exit;
     }
@@ -109,11 +127,11 @@ class ppa {
      */
     private function openAndCreateFileCSV(string $depth, string $dirname, string $slug): void
     {
-        if (file_exists($dirname . 'ppa-' . $depth . '.csv')) {
+        if (file_exists($dirname . 'paa-' . $this->lang . '-' . $depth . '.csv')) {
             header('Content-Type: text/csv; charset=UTF-8');
             header('Content-Description: File Transfer');
             header('Content-Disposition: attachment; filename="' . $slug . '.csv"');
-            $reader = Reader::createFromPath($dirname . 'ppa-' . $depth . '.csv', 'r');
+            $reader = Reader::createFromPath($dirname . 'paa-' . $this->lang . '-' . $depth . '.csv', 'r');
             $reader->output();
             die();
         }
@@ -126,14 +144,15 @@ class ppa {
      */
     private function fileRenderCSV(string $keyword, string $depth, string $dirname)
     {
-        if (!file_exists($dirname . 'ppa-' . $depth . '.csv')) {
-            $output = shell_exec("/usr/bin/node assets/js/get_paas.js --clicks=$depth --kw=\"$keyword\"");
+        if (!file_exists($dirname . 'paa-' . $this->lang . '-' . $depth . '.csv')) {
+            $output = shell_exec("/usr/bin/node assets/js/get_paas.js --clicks=$depth --kw=\"$keyword\" --lang={$this->lang}");
             $delimiter = explode("==", $output);
             if (!isset($delimiter[2])) {
-                $this->renderError($this->msg, 'Oops, Essayez avec un autre terme :(');
+                $this->renderError('Oops, Essayez avec un autre terme :(');
             }
             if (!file_exists($dirname)) {
-                mkdir($dirname, 0777);
+                $this->createDir(self::PATH_QUESTIONS);
+                $this->createDir($dirname);
             }
             $this->createAndDataCSV($delimiter, $depth, $dirname);
         }
@@ -150,7 +169,7 @@ class ppa {
         foreach ($wrap_line as $wrap) {
             $csv_construct[] = [$wrap];
         }
-        $writer = Writer::createFromPath($dirname . 'ppa-' . $depth . '.csv', 'w+');
+        $writer = Writer::createFromPath($dirname . 'paa-' . $this->lang . '-' . $depth . '.csv', 'w+');
         $writer->insertAll($csv_construct);
     }
 
@@ -163,8 +182,41 @@ class ppa {
      */
     private function dataWithLimitCSV(string $depth, string $dirname, int $limit): ResultSet
     {
-        $csv = Reader::createFromPath($dirname . 'ppa-' . $depth . '.csv', 'r');
+        $csv = Reader::createFromPath($dirname . 'paa-' . $this->lang . '-' . $depth . '.csv', 'r');
         $stmt = (new Statement())->limit($limit);
         return $stmt->process($csv);
+    }
+
+    /**
+     * @return string
+     */
+    private function langPaa(): string
+    {
+        $langPaa = ParamsRequest::post('lang');
+        $langPaaIsset = ParamsRequest::methodIsset($_POST, 'lang');
+        $langPaaNotEmpty = ParamsRequest::methodEmpty($_POST, 'lang', true);
+        if ($langPaaIsset && $langPaaNotEmpty) {
+            if (in_array($langPaa, self::LANG)) {
+                $this->lang = $langPaa;
+                return $this->lang;
+            }
+            return $this->lang;
+        }
+        return $this->lang;
+    }
+
+    /**
+     * @return bool
+     */
+    private function createDir(string $dirname): bool
+    {
+        if (!file_exists($dirname)) {
+            if (!mkdir($dirname, 0777, true)) {
+                $this->renderError('Oops, Vous devez donner les droits nécessaires au dossier <strong>assets</strong> en <strong>root</strong> (sudo ou su) comme suit: ', true);
+                return false;
+            }
+            return true;
+        }
+        return true;
     }
 }
