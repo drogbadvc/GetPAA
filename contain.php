@@ -8,9 +8,10 @@
                 </div>
             </div>
             <div class="row" style="padding-left: 15px">
-                <div class="col-sm-6 col-xl-8">
+                <div class="col-sm-10 col-xl-11">
                     <form action="#" method="POST">
-                        <div class="form-group">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
                             <label for="Inputkeyword">Mot clé ou terme</label>
                             <input type="keyword" class="form-control" id="Inputkeyword" name="Inputkeyword"
                                    autocomplete="on" placeholder="Exemple : Qu'est-ce que qwant"
@@ -18,8 +19,16 @@
                             <small class="form-text text-muted">Entrez un mot ou un terme pour obtenir une liste de
                                 questions à exploiter.</small>
                         </div>
+                            <div class="form-group col-md-6">
+                            <label for="lang">Langue</label>
+                                <select class="form-control" id="lang" name="lang">
+                                    <?php HelperHTML::selected('fr', $lang) ?>
+                                    <?php HelperHTML::selected('en', $lang) ?>
+                                </select>
+                            </div>
+                        </div>
                         <div class="form-group">
-                            <label for="exampleFormControlSelect1">Profondeur PPA</label>
+                            <label for="exampleFormControlSelect1">Profondeur PAA</label>
                             <select class="form-control" id="exampleFormControlSelect1" name="depth">
                                 <option value="0">0</option>
                                 <option value="1">1</option>
@@ -46,12 +55,12 @@
         if (ParamsRequest::methodIsset($_POST, 'Inputkeyword') &&
             ParamsRequest::methodEmpty($_POST, 'Inputkeyword', true) &&
             ParamsRequest::methodIsset($_POST, 'depth')): ?>
-            <?php if (Ppa::inArrayDepth()): ?>
+            <?php if (Paa::inArrayDepth()): ?>
                 <div class="card">
                     <div class="row page-title" style="padding-left: 15px">
                         <div class="col-sm-4 col-xl-6">
                             <h4><?= $keyword ?> <a target="_BLANK"
-                                                   href="?export=csv&keyword=<?= $slug_csv ?>&depth=<?= $depth ?>&_token=<?= $token ?>"
+                                                   href="?export=csv&keyword=<?= $slug_csv ?>&depth=<?= $depth ?>&lang=<?= $lang ?>&_token=<?= $token ?>"
                                                    class="btn btn-success btn-sm">Export CSV</a></h4>
                         </div>
                     </div>
@@ -63,7 +72,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <?php HelperHTML::tdRecords($ppa_record) ?>
+                        <?php HelperHTML::tdRecords($paa_record) ?>
                         </tbody>
                     </table>
                 </div>
