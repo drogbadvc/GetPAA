@@ -15,4 +15,22 @@ class HelperHTML
             }
         }
     }
+
+    /**
+     * @param string $value
+     */
+    public static function selected(string $value = '', string $search = '')
+    {
+        if ($value === 'en') {
+            $valueUppercase = 'EN (US)';
+        } else {
+            $valueUppercase = mb_strtoupper($value);
+        }
+
+        if ($value === $search) {
+            echo "<option value='$value' selected>$valueUppercase</option>";
+        } else {
+            echo "<option value='$value'>$valueUppercase</option>";
+        }
+    }
 }
