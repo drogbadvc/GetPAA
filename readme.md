@@ -13,12 +13,18 @@ Ability to switch to English in configuration files.
 
 **Local Environment**
 * PHP >=7.2 (https://www.php.net/downloads.php)
-* NodeJS (https://nodejs.org/fr/)
+* NodeJS >=8.16.0 (https://nodejs.org/fr/)
 * Composer (https://github.com/composer/composer)
 
 **NPM-Packages**
 * Puppeteer (https://www.npmjs.com/package/puppeteer)
 * Minimist (https://www.npmjs.com/package/minimist)
+
+## Demo && Preview
+
+![A screenshot of GetPaa](https://i.imgur.com/XzaHgYw.png)
+
+**Visit the [demo youtube](https://www.youtube.com/watch?v=AKoTRefeJsc)**
 
 ## Install
 
@@ -48,9 +54,40 @@ npm install
 composer install
 ```
 
+## Installation NodeJS (v13.x)
+
+```sh
+# Using Ubuntu
+curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+## Installation NPM (v6.13)
+
+```sh
+sudo apt-get -qq update 
+sudo apt-get --yes -qq --allow-downgrades install npm;
+```
+
+## Installation Composer && dependencies
+
+```sh
+# Composer && php7
+sudo apt-get -qq update
+sudo apt-get --yes -qq --allow-downgrades install composer;
+# ext-mbstring
+sudo apt-get --yes -qq --allow-downgrades install php-mbstring;
+# ext-dom
+sudo apt-get --yes -qq --allow-downgrades install php-xml;
+```
+
+
 ## Usage
 
 Open in browser your web server.
+```sh
+php -S localhost:8000
+```
 Enjoy!!
 
 ## License
